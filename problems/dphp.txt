@@ -1,0 +1,47 @@
+ Sometimes in a PHP page it may be useful to not only retrieve data values from a MySQL database table, but also to retrieve column names from the table. Listed below is an example of how to do this for MySQL databases using PHP. This example uses MySQL PHP libraries that have been available since PHP 4.
+
+This example makes use of the mysql_num_fields and mysql_fetch_field functions to get a count of the number of columns, and then get the column name for each column index. The mysql_fetch_row function is used to get the values.
+
+				
+<?php
+//$host = '127.0.0.1';
+//$port = '3306';
+//$server = $host . ':' . $port;
+//$user = 'root';
+//$password = '';
+$link = mysql_connect ('127.0.0.1:3306', 'root', '');
+if (!$link)
+{
+	die('Error: Could not connect: ' . mysql_error());
+}
+$database = 'mysql';
+mysql_select_db($database);
+$query = 'select * from user';
+$result = mysql_query($query);
+if (!$result) 
+{	$message = 'ERROR:' . mysql_error();
+	return $message;	}
+else
+{	$i = 0;
+	echo '<html><body><table><tr>';
+	while ($i < mysql_num_fields($result))
+	{	$meta = mysql_fetch_field($result, $i);
+		echo '<td>' . $meta->name . '</td>';
+		$i = $i + 1;	}
+	echo '</tr>';	
+	$i = 0;
+	while ($row = mysql_fetch_row($result)) 
+	{	echo '<tr>';
+		$count = count($row);
+		$y = 0;
+		while ($y < $count)
+		{	$c_row = current($row);
+			echo '<td>' . $c_row . '</td>';
+			next($row);
+			$y = $y + 1;	}
+		echo '</tr>';
+		$i = $i + 1;	}
+	echo '</table></body></html>';
+	mysql_free_result($result);	}
+mysql_close ($link);
+?>
